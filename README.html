@@ -1,1 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Week Countdown</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #ffebee;
+            overflow: hidden;
+        }
 
+        /* Animated Text */
+        .animated-text span {
+            font-size: 40px;
+            font-weight: bold;
+            display: inline-block;
+            animation: colorChange 2s infinite alternate, bounce 1s infinite alternate;
+        }
+
+        .animated-text span:nth-child(odd) { color: red; animation-delay: 0s; }
+        .animated-text span:nth-child(even) { color: blue; animation-delay: 0.2s; }
+
+        @keyframes colorChange {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-10px); }
+        }
+
+        /* Timer */
+        .countdown-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: blue;
+            margin: 10px 0;
+        }
+
+        /* Floating Hearts */
+        .heart-border {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            color: red;
+            animation: floatHearts 5s infinite linear;
+        }
+
+        .heart::before { content: "❤️"; }
+
+        @keyframes floatHearts {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        }
+
+        /* Random Heart Positions */
+        .heart:nth-child(1) { left: 10%; animation-duration: 4s; }
+        .heart:nth-child(2) { left: 25%; animation-duration: 6s; }
+        .heart:nth-child(3) { left: 40%; animation-duration: 5s; }
+        .heart:nth-child(4) { left: 55%; animation-duration: 7s; }
+        .heart:nth-child(5) { left: 70%; animation-duration: 4.5s; }
+        .heart:nth-child(6) { left: 85%; animation-duration: 5.5s; }
+
+        /* Floating & Glowing Image */
+        .image-container {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .image-container img {
+            width: 250px;
+            border-radius: 10px;
+            transition: transform 0.3s ease-in-out;
+            animation: floatImage 3s infinite ease-in-out, heartGlow 2s infinite alternate;
+        }
+
+        .image-container img:hover {
+            transform: scale(1.1);
+        }
+
+        /* Floating Animation */
+        @keyframes floatImage {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+
+        /* Heart Glow Effect */
+        @keyframes heartGlow {
+            0% { box-shadow: 0 0 10px red; }
+            50% { box-shadow: 0 0 20px pink; }
+            100% { box-shadow: 0 0 10px red; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Animated Name -->
+    <h1 class="animated-text">
+        <span>R</span><span>o</span><span>s</span><span>y</span>
+    </h1>
+
+    <!-- Animated Wishing You -->
+    <h2 class="animated-text">
+        <span>W</span><span>i</span><span>s</span><span>h</span><span>i</span><span>n</span><span>g</span>
+        <span>Y</span><span>o</span><span>u</span>
+    </h2>
+
+    <!-- Dynamic Valentine's Week Day -->
+    <h1 class="animated-text" id="valentineDay"></h1>
+
+    <!-- Countdown Timer -->
+    <p class="countdown-text" id="countdownTimer">Loading...</p>
+
+    <!-- Floating Hearts -->
+    <div class="heart-border">
+        <span class="heart"></span>
+        <span class="heart"></span>
+        <span class="heart"></span>
+        <span class="heart"></span>
+        <span class="heart"></span>
+        <span class="heart"></span>
+    </div>
+
+    <!-- Image Section -->
+    <div class="image-container">
+        <img src="https://i.ibb.co/Cqy0mFk/Messenger-creation-254-EDC9-E-E43-A-4075-9255-AEFB0-EB70-DC2.jpg" alt="Valentine Image">
+    </div>
+
+    <script>
+        function getValentineWeekDay() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const valentineDays = [
+                { date: new Date(year, 1, 7), name: "Rose Day" },
+                { date: new Date(year, 1, 8), name: "Propose Day" },
+                { date: new Date(year, 1, 9), name: "Chocolate Day" },
+                { date: new Date(year, 1, 10), name: "Teddy Day" },
+                { date: new Date(year, 1, 11), name: "Promise Day" },
+                { date: new Date(year, 1, 12), name: "Hug Day" },
+                { date: new Date(year, 1, 13), name: "Kiss Day" },
+                { date: new Date(year, 1, 14), name: "Valentine's Day" }
+            ];
+
+            let todayDate = today.setHours(0, 0, 0, 0);
+            let nextEvent = null;
+
+            for (let event of valentineDays) {
+                if (event.date.setHours(0, 0, 0, 0) >= todayDate) {
+                    document.getElementById("valentineDay").innerText = event.name;
+                    nextEvent = event.date;
+                    break;
+                }
+            }
+
+            if (nextEvent) {
+                startCountdown(nextEvent);
+            } else {
+                document.getElementById("valentineDay").innerText = "Waiting for Valentine's Week!";
+            }
+        }
+
+        function startCountdown(targetDate) {
+            let timer = setInterval(function () {
+                let now = new Date().getTime();
+                let timeLeft = targetDate.getTime() - now;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    document.getElementById("countdownTimer").innerText = "Time to Celebrate!";
+                    return;
+                }
+
+                let hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                let seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                document.getElementById("countdownTimer").innerText = `${hours}h ${minutes}m ${seconds}s`;
+            }, 1000);
+        }
+
+        getValentineWeekDay();
+    </script>
+
+</body>
+  </html>
